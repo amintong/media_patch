@@ -232,6 +232,18 @@ class _IIndexClient(metaclass=ABCMeta):
                 index_match_fail += 1
                 continue
 
+            # 不完整的资源
+            if meta_info.get_episode_list() :
+                # 非电影，只有最后一季才下载不完整的资源，不然单集了
+                if meta_info.tmdb_info and hasattr(meta_info.tmdb_info, "seasons"):
+                    last_season_num = meta_info.tmdb_info.seasons[-1].season_number
+                    if str(last_season_num) not in meta_info.get_season_string():
+                        index_rule_fail += 1
+                        log.info(f"【{self.client_name}】"
+                                 f"{meta_info.get_title_string()}{meta_info.get_season_string()} "
+                                 f"非最新季，过滤掉季集不完整的资源：{torrent_name} {description}")
+                        continue
+                    
             # 匹配到了
             log.info(
                 f"【{self.client_name}】{torrent_name} {description} 识别为 {media_info.get_title_string()} "
