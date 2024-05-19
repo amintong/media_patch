@@ -2,6 +2,8 @@ import os.path
 import re
 
 import log
+import json
+
 from app.downloader import Downloader
 from app.helper import ProgressHelper
 from app.helper.openai_helper import OpenAiHelper
@@ -102,10 +104,15 @@ def search_medias_for_web(content, ident_flag=True, filters=None, tmdbid=None, m
                 if search_en_name:
                     second_search_name = search_en_name
 
-            filter_args = {"season": search_season,
-                           "episode": search_episode,
-                           "year": media_info.year,
-                           "type": media_info.type}
+            filter_args = {
+                        #    "season": search_season,
+                        #    "episode": search_episode,
+                        #    "year": media_info.year,
+                           "season": None,
+                           "episode": None,
+                           "year": None,
+                           "type": media_info.type
+                    }
         else:
             # 查询不到数据，使用快速搜索
             log.info(f"【Web】{content} 未从TMDB匹配到媒体信息，将使用快速搜索...")
@@ -130,6 +137,7 @@ def search_medias_for_web(content, ident_flag=True, filters=None, tmdbid=None, m
     # 整合高级查询条件
     if filters:
         filter_args.update(filters)
+    # log.info("【Searcher】filter_args" + json.dumps(filter_args))
     # 开始搜索
     log.info("【Web】开始搜索 %s ..." % content)
     media_list = _searcher.search_medias(key_word=first_search_name,
